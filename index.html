@@ -1,0 +1,795 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한부모가족 지원제도 개선 방안 - 국정 정책연구 발표 및 30초 동영상 통합 시스템</title>
+<style>
+  :root {
+    --primary: #002244;
+    --primary-blue: #1D4ED8;
+    --accent-teal: #0D9488;
+    --accent-green: #10B981;
+    --accent-red: #DC2626;
+    --bg-dark: #0A0F1D;
+    --panel-bg: #111827;
+    --card-bg: #1F2937;
+    --border-color: #374151;
+    --text-main: #F9FAFB;
+    --text-muted: #9CA3AF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif; }
+  body { background: var(--bg-dark); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Top Navigation Bar */
+  header {
+    height: 60px;
+    background: #001A35;
+    border-bottom: 1px solid #1E3A8A;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+  .brand-group { display: flex; align-items: center; gap: 12px; }
+  .gov-emblem {
+    width: 28px; height: 28px; background: #2563EB; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; color: #FFF;
+  }
+  .brand-title { font-size: 1.1rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.3px; }
+  .brand-sub { font-size: 0.8rem; color: #93C5FD; font-weight: 500; }
+  
+  .header-actions { display: flex; gap: 12px; align-items: center; }
+  button {
+    background: #2563EB; color: white; border: none; padding: 8px 16px; border-radius: 6px;
+    font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease;
+    display: flex; align-items: center; gap: 6px;
+  }
+  button:hover { background: #1D4ED8; transform: translateY(-1px); }
+  button.secondary { background: #374151; }
+  button.secondary:hover { background: #4B5563; }
+  button.sync-active { background: #059669; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+
+  /* Main Workspace Layout (Left: Slide Deck, Right: Synchronized Video Hub) */
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 20px;
+    padding: 20px 28px;
+    overflow: hidden;
+  }
+
+  /* Slide Presentation Area */
+  .presentation-pane {
+    position: relative;
+    background: #0D1424;
+    border: 1px solid #1F2937;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+  .slide-viewport {
+    flex: 1;
+    position: relative;
+    padding: 32px 36px;
+    overflow-y: auto;
+  }
+  .slide {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+    animation: fadeIn 0.3s ease;
+  }
+  .slide.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .slide-meta-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #1E3A8A;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+  }
+  .slide-category {
+    font-size: 0.82rem; font-weight: 700; color: #60A5FA;
+    background: rgba(37, 99, 235, 0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+  .slide-num { font-size: 0.85rem; font-weight: 700; color: #9CA3AF; font-family: monospace; }
+  .slide-title { font-size: 1.7rem; font-weight: 800; color: #FFFFFF; line-height: 1.35; }
+
+  /* Content Components */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 6px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 6px; }
+  
+  .gov-card {
+    background: #131D31;
+    border: 1px solid #24324D;
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card-h { font-size: 1.02rem; font-weight: 700; color: #38BDF8; display: flex; align-items: center; gap: 6px; }
+  .card-p, .gov-card li { font-size: 0.9rem; color: #CBD5E1; line-height: 1.6; }
+  .gov-card ul { padding-left: 18px; }
+
+  .stat-highlight {
+    background: #0B1322;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stat-val { font-size: 1.9rem; font-weight: 800; color: #34D399; }
+  .stat-lbl { font-size: 0.82rem; color: #94A3B8; }
+
+  .critic-alert {
+    background: rgba(220, 38, 38, 0.08);
+    border-left: 4px solid #EF4444;
+    padding: 14px 16px;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+  .critic-h { font-weight: 700; color: #F87171; font-size: 0.92rem; margin-bottom: 4px; }
+  .critic-alert p { color: #FECACA; font-size: 0.86rem; line-height: 1.5; }
+
+  .source-box {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid #1E293B;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #94A3B8;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+  .source-box a { color: #60A5FA; text-decoration: none; word-break: break-all; }
+  .source-box a:hover { text-decoration: underline; }
+
+  /* Right Side: Synchronized Policy Video Hub */
+  .video-hub-pane {
+    background: #0E1626;
+    border: 1px solid #1E293B;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+  .video-hub-header {
+    background: #002244;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1E3A8A;
+  }
+  .vh-title { font-size: 0.95rem; font-weight: 800; color: #FFFFFF; display: flex; align-items: center; gap: 8px; }
+  .vh-status { font-size: 0.75rem; background: #10B981; color: #000; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  
+  canvas#syncCanvas {
+    width: 100%;
+    height: 236px;
+    background: #000;
+    display: block;
+  }
+
+  /* Video Timeline & Scene Guide */
+  .video-controls-bar {
+    padding: 12px 18px;
+    background: #0B1120;
+    border-top: 1px solid #1E293B;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ctrl-row { display: flex; align-items: center; gap: 10px; }
+  .progress-rail {
+    flex: 1; height: 8px; background: #1F2937; border-radius: 4px; cursor: pointer; position: relative; overflow: hidden;
+  }
+  .progress-fill { height: 100%; width: 0%; background: #2563EB; transition: width 0.08s linear; }
+  .time-text { font-family: monospace; font-size: 0.8rem; color: #9CA3AF; }
+
+  /* Chapter Navigation (Click to jump slide & video) */
+  .chapters-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #0A0F1D;
+  }
+  .chapter-item {
+    background: #111827;
+    border: 1px solid #1F2937;
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .chapter-item:hover { border-color: #3B82F6; background: #1E293B; }
+  .chapter-item.active { border-color: #3B82F6; background: rgba(37, 99, 235, 0.15); }
+  .chap-left { display: flex; flex-direction: column; gap: 2px; }
+  .chap-time { font-size: 0.72rem; color: #60A5FA; font-weight: 700; font-family: monospace; }
+  .chap-name { font-size: 0.85rem; font-weight: 600; color: #F3F4F6; }
+  .chap-badge { font-size: 0.7rem; color: #9CA3AF; }
+
+  /* Footer Controls */
+  footer {
+    height: 52px;
+    background: #001A35;
+    border-top: 1px solid #1E3A8A;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+  }
+  .foot-help { font-size: 0.82rem; color: #93C5FD; display: flex; align-items: center; gap: 14px; }
+  .deck-nav { display: flex; align-items: center; gap: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-group">
+    <div class="gov-emblem">국정</div>
+    <div>
+      <div class="brand-title">한부모가족 지원제도 개선 방안 정책연구</div>
+      <div class="brand-sub">국정 브리핑 표준 프레젠테이션 &amp; 30초 정책영상 동기화 시스템</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button id="syncModeBtn" class="sync-active" onclick="toggleSyncMode()">🔗 발표-동영상 연동 중</button>
+    <button class="secondary" onclick="toggleFullScreen()">⛶ 전체화면 (F)</button>
+  </div>
+</header>
+
+<main>
+  <!-- Left Side: Interactive Slide Deck -->
+  <section class="presentation-pane">
+    <div class="slide-viewport">
+
+      <!-- Slide 1: Cover -->
+      <div class="slide active">
+        <div class="slide-meta-bar">
+          <span class="slide-category">국가 정책연구 전략과제 (2026)</span>
+          <span class="slide-num">01 / 07</span>
+        </div>
+        <div class="slide-title">
+          모든 아이의 행복한 성장과 가족 지원을 위한<br>
+          <span style="color:#60A5FA;">한부모가족 지원제도 개선 방안</span>
+        </div>
+        <p style="color:#94A3B8; font-size:1.02rem; line-height:1.6; margin-top:4px;">
+          최근 3개년(2023~2026) 공식 정책·통계 분석, 서브에이전트 레드팀 정합성 검증 및 5개년 로드맵
+        </p>
+
+        <div class="grid-3" style="margin-top:16px;">
+          <div class="stat-highlight">
+            <div class="stat-lbl">소득선정기준 단계적 상향</div>
+            <div class="stat-val">60% → 65%</div>
+            <div class="stat-lbl">2026년 복지급여 대상 1만 명 추가 편입</div>
+          </div>
+          <div class="stat-highlight">
+            <div class="stat-lbl">양육비 선지급제 혁신</div>
+            <div class="stat-val">소득기준 폐지</div>
+            <div class="stat-lbl">2026.10 전 계층 권리보장 전환 (월 20만)</div>
+          </div>
+          <div class="stat-highlight">
+            <div class="stat-lbl">한부모 지원 총예산</div>
+            <div class="stat-val">6,260억 원</div>
+            <div class="stat-lbl">2026년 여가부(성평등가족부) 예산 (+6.0%)</div>
+          </div>
+        </div>
+
+        <div class="gov-card" style="margin-top:14px; background:#0F1E36; border-color:#2563EB;">
+          <div class="card-h" style="color:#93C5FD;">💡 국정 브리핑 인터랙티브 기능 안내</div>
+          <p class="card-p">
+            본 시스템은 좌측 <strong>국정 발표 슬라이드</strong>와 우측의 <strong>30초 핵심 브리핑 동영상</strong>이 1:1로 실시간 상호 동기화됩니다. 하단의 [다음] 버튼을 누르거나 우측 타임라인 챕터를 클릭하시면 해당 구간의 슬라이드와 동영상이 동시에 전환됩니다.
+          </p>
+        </div>
+      </div>
+
+      <!-- Slide 2: 과거 지속 지원 경과 및 2026 현황 -->
+      <div class="slide">
+        <div class="slide-meta-bar">
+          <span class="slide-category">참고자료 1: 최근 3년간 공식 정부 통계</span>
+          <span class="slide-num">02 / 07</span>
+        </div>
+        <div class="slide-title">과거 지속 지원 추진 경과 및 2026년 정책 현황</div>
+        <div class="grid-2">
+          <div class="gov-card">
+            <div class="card-h">📌 아동양육비 및 추가지원 확대 추이</div>
+            <ul>
+              <li><strong>선정 기준:</strong> 2023년 중위 60% → 2024~2025년 63% → 2026년 65% 이하 (2인가구 약 273만 원)</li>
+              <li><strong>기본 단가:</strong> 월 20만 원(23년) → 월 21만 원(24년) → 월 23만 원(25~26년 현행 동결)</li>
+              <li><strong>추가아동양육비:</strong> 조손, 35세↑ 미혼, 25~34세 청년한부모 대상 월 10만 원으로 통합 인상</li>
+              <li><strong>청년한부모 지원:</strong> 기본 23만 + 추가 10만 = 자녀 1인당 최대 월 33만 원 수급</li>
+              <li><strong>청소년한부모(24세 이하):</strong> 0~1세 월 40만 원, 2세 이상 월 37만 원 및 자립촉진수당</li>
+            </ul>
+          </div>
+          <div class="gov-card">
+            <div class="card-h">📌 양육비 선지급제 및 전달체계 거점화</div>
+            <ul>
+              <li><strong>양육비 선지급제 시행:</strong> 2025.7 도입(월 20만 원), 2026.10.29 소득기준(기존 150%) 전면 폐지</li>
+              <li><strong>2026년도 정부 예산:</strong> 총 6,260억 원 편성 (+6.0% 증액), 법률구조 1,900건 및 임대주택 346호 공급</li>
+              <li><strong>가족센터 232개소:</strong> '온가족보듬사업'을 통한 보편적 가족통합 서비스 수행</li>
+              <li><strong>이주배경·1인가구:</strong> 이주배경 아동 15개 언어 AI 상담망 및 1인가구(전체의 36.6%) 역량강화</li>
+            </ul>
+          </div>
+        </div>
+        <div class="source-box">
+          [출처 근거] 보건복지부 고시 제2025-144호 <a href="https://www.mohw.go.kr" target="_blank">mohw.go.kr</a> | 성평등가족부 2026년도 예산안 보도자료 <a href="https://www.korea.kr" target="_blank">korea.kr</a> | 국가법령정보센터 「한부모가족지원법」 <a href="https://www.law.go.kr" target="_blank">law.go.kr</a>
+        </div>
+      </div>
+
+      <!-- Slide 3: 레드팀 정합성 검증 -->
+      <div class="slide">
+        <div class="slide-meta-bar">
+          <span class="slide-category">참고자료 2 &amp; 3: 정합성 비판 검증</span>
+          <span class="slide-num">03 / 07</span>
+        </div>
+        <div class="slide-title">서브에이전트 레드팀 정합성 검증: 10대 핵심 모순 지적</div>
+        <div class="grid-2">
+          <div class="critic-alert">
+            <div class="critic-h">⚠️ 명목 기준 완화 vs 체감 생계비 괴리</div>
+            <p>소득기준을 65%로 확대했으나 양육비 단가는 월 23만 원으로 동결. 자녀 1인당 실제 양육비(58.3만 원) 대비 보전율은 39.5%(중고등 34.8%)에 불과하여 실질 빈곤 완화 효과가 제한적임.</p>
+          </div>
+          <div class="critic-alert">
+            <div class="critic-h">⚠️ 복지 절벽(Cliff Effect)과 근로 자기제한</div>
+            <p>소득인정액이 기준선(2인가구 약 273만 원)을 단 1만 원만 초과해도 양육비 및 각종 감면 혜택이 일시에 전액 박탈(All-or-Nothing)되어 취업 한부모가 근로시간을 줄이는 모순 유발.</p>
+          </div>
+          <div class="critic-alert">
+            <div class="critic-h">⚠️ 생계형 차량 100% 소득환산 사각지대</div>
+            <p>1,000만 원 또는 2,000cc 초과 차량 보유 시 가액 100%가 월소득으로 잡혀 즉시 수급 탈락. 전월세 보증금에 월 4.17%(연 50%)의 비현실적 환산율 적용 잔존.</p>
+          </div>
+          <div class="critic-alert">
+            <div class="critic-h">⚠️ 양육비 선지급제 회수율 10%대 재정 누수</div>
+            <p>채무자 80% 불응, 회수율 14.66%에 불과한 상황에서 소득기준 폐지 시 강력한 금융·원천징수 권한 없이는 비양육부 채무의 국가 대납 위험 초래.</p>
+          </div>
+        </div>
+        <div class="source-box">
+          [검증 근거] 한국개발연구원(KDI) 「한부모가족 복지급여의 근로유인 효과」(https://www.kdi.re.kr) | 한국보건사회연구원 보건복지포럼 제331호 (https://www.kihasa.re.kr)
+        </div>
+      </div>
+
+      <!-- Slide 4: 2024 현장 실태 통계 -->
+      <div class="slide">
+        <div class="slide-meta-bar">
+          <span class="slide-category">참고자료 4: 2024년 실태조사 공표 통계</span>
+          <span class="slide-num">04 / 07</span>
+        </div>
+        <div class="slide-title">한부모가족 현장 실태 조사 및 다중 취약성 분석</div>
+        <div class="grid-2">
+          <div class="gov-card">
+            <div class="card-h">📊 경제 및 고용 여건의 구조적 취약성</div>
+            <p>• <strong>소득 수준:</strong> 월평균 처분가능소득 294.6만 원으로 일반가구(488.7만 원)의 60.3%에 불과</p>
+            <p>• <strong>부채 구조:</strong> 부채 원인의 91.4%가 주거비(50.7%) 및 생활비(40.7%) 충당에 집중</p>
+            <p>• <strong>고용의 질:</strong> 취업률 83.9%이나 임시·일용직이 30.8%(일반 취업자 19.9% 대비 10.9%p 고율)</p>
+            <p>• <strong>영세사업장 집중:</strong> 1~4인 사업장 종사 35.1%로 법정 육아휴직·돌봄단축 사각지대</p>
+          </div>
+          <div class="gov-card">
+            <div class="card-h">📊 양육비 미지급 및 사회적 고립 실태</div>
+            <p>• <strong>양육비 미수령률:</strong> 이혼·미혼 한부모의 71.3%가 양육비를 '한 번도 받지 못함' (채권확보율 33.3%)</p>
+            <p>• <strong>희망 정책 1순위:</strong> '양육비 선지급제 도입 및 긴급지원' (71.0%)</p>
+            <p>• <strong>정신건강 위험:</strong> 임상적 우울증상 유병률 7.3% (일반 성인 5.0% 대비 높은 위험군)</p>
+            <p>• <strong>사회적 고립:</strong> 급전 필요 시 도움 부재 44.6%, 본인 투병 시 도움 부재 26.3%</p>
+          </div>
+        </div>
+        <div class="source-box">
+          [국가승인통계] 여성가족부 「2024년 한부모가족 실태조사」(2025.3.31 발표, KOSIS <a href="https://kosis.kr" target="_blank">kosis.kr</a>) | 한국여성정책연구원 여성가족패널조사 (https://www.kwdi.re.kr)
+        </div>
+      </div>
+
+      <!-- Slide 5: 해외 선진사례 비교 -->
+      <div class="slide">
+        <div class="slide-meta-bar">
+          <span class="slide-category">참고자료 5: 해외 선진사례 비교 연구</span>
+          <span class="slide-num">05 / 07</span>
+        </div>
+        <div class="slide-title">해외 주요국 선진 복지제도 비교 및 정책 시사점</div>
+        <div class="grid-2">
+          <div class="gov-card">
+            <div class="card-h">🇩🇪 독일 &amp; 🇫🇷 프랑스</div>
+            <p>• <strong>독일(UVG):</strong> 아동복지청 양육선급금(0~5세 €227, 6~11세 €299, 12~17세 €394 차등). 국가가 채권 자동 대위 및 고용주 소득자료 요구권 행사. (보편 아동수당 Kindergeld 월 €259 병행)</p>
+            <p>• <strong>프랑스(CAF/ARIPA):</strong> 가족지원수당(ASF 월 €200.78) 및 ARIPA 전담 징수 금융중개. 취업돌봄보조금(AGEPI)으로 취업 한부모에게 연 60~120만 원 바우처 즉시 지원.</p>
+          </div>
+          <div class="gov-card">
+            <div class="card-h">🇬🇧 영국 &amp; 🇸🇪 스웨덴</div>
+            <p>• <strong>영국(Universal Credit):</strong> 생계·주거·보육 통합급여로 행정칸막이 해소, 취업 한부모 대상 실제 보육료의 최대 85%(월 최대 £1,836.16) 환급 지원.</p>
+            <p>• <strong>스웨덴:</strong> 사회보험청과 국세청 전산 실시간 연동, 아동 연령별 선지급금(월 SEK 1,673~2,223) 집행 및 국세청 연계 강력 원천징수.</p>
+          </div>
+        </div>
+        <div class="source-box">
+          [해외 공식 포털] 독일 Familienportal <a href="https://familienportal.de" target="_blank">familienportal.de</a> | 프랑스 CAF <a href="https://www.caf.fr" target="_blank">caf.fr</a> | 영국 GOV.UK <a href="https://www.gov.uk/universal-credit" target="_blank">gov.uk</a> | 스웨덴 사회보험청 <a href="https://www.forsakringskassan.se" target="_blank">forsakringskassan.se</a>
+        </div>
+      </div>
+
+      <!-- Slide 6: 종합 개선 방안 -->
+      <div class="slide">
+        <div class="slide-meta-bar">
+          <span class="slide-category">개선방안 1 &amp; 2: 플랫폼, 발굴, 차등급여</span>
+          <span class="slide-num">06 / 07</span>
+        </div>
+        <div class="slide-title">K-한부모 종합 개선 대안: 플랫폼·차등급여·사전발굴</div>
+        <div class="grid-2">
+          <div class="gov-card">
+            <div class="card-h">💻 온라인 원스톱 「한부모가족 온(On)」 &amp; 듀얼케어</div>
+            <p>• <strong>30초 모의계산 API 허브:</strong> 복지로·정부24·e가족망·양육비관리원을 표준 API로 연계해 30초 내 자격·예상급여 자동 산출 (Zero-Retention 원칙)</p>
+            <p>• <strong>민·관 듀얼 매니지먼트:</strong> 읍면동 복지공무원(공적급여) + 가족센터 사례관리사(밀착돌봄) 1:1 공동 전담제로 1~2년 순환보직 공백 원천 해소</p>
+          </div>
+          <div class="gov-card">
+            <div class="card-h">📈 복지 절벽 해소 &amp; 생애주기 차등 바우처</div>
+            <p>• <strong>점감형 급여(Tapering):</strong> 기준 초과 시 일괄 탈락을 폐지하고 초과분 단계적 감액 및 취업 시 2년간 근로소득 공제율 30%→50% 한시 상향</p>
+            <p>• <strong>생애주기 차등:</strong> 영아기(+월 12만 원 가산금), 학령기(초등 30만/중등 50만/고등 70만 학습바우처), 자립기(만 19~24세 월 20만 원)</p>
+            <p>• <strong>차량기준 현실화:</strong> 차령 7년↑ 또는 1,000만 원 이하 노후 생계차량 1대 재산 100% 공제</p>
+          </div>
+        </div>
+        <div class="source-box">
+          [정책 설계 근거] 보건복지부 맞춤형 급여안내 <a href="https://www.bokjiro.go.kr" target="_blank">bokjiro.go.kr</a> | 개인정보보호위원회 공공 마이데이터 가이드 <a href="https://www.pipc.go.kr" target="_blank">pipc.go.kr</a>
+        </div>
+      </div>
+
+      <!-- Slide 7: 5개년 로드맵 및 비전 -->
+      <div class="slide">
+        <div class="slide-meta-bar">
+          <span class="slide-category">참고자료 6: 5개년 로드맵 (2026~2030)</span>
+          <span class="slide-num">07 / 07</span>
+        </div>
+        <div class="slide-title">단계별 5개년 추진 로드맵 및 국가 비전 달성</div>
+        <div class="grid-3">
+          <div class="gov-card">
+            <div class="card-h">1단계: 기반 구축 (26~27)</div>
+            <p>• '한부모가족 온' API 설계</p>
+            <p>• 노후 생계차량 재산 제외</p>
+            <p>• 채권 자동대위 법안 발의</p>
+            <p>• 10개 시군구 듀얼매니지먼트 시범</p>
+          </div>
+          <div class="gov-card">
+            <div class="card-h">2단계: 본격 확산 (27~28)</div>
+            <p>• '한부모가족 온' 정식 개통</p>
+            <p>• 영아 가산 및 학령기 학습바우처</p>
+            <p>• K-AGEPI 보육바우처 시범</p>
+            <p>• 229개 시군구 공동전담 전면화</p>
+          </div>
+          <div class="gov-card">
+            <div class="card-h">3단계: 고도화 안착 (29~30)</div>
+            <p>• 비양육부 실시간 원천징수 완비</p>
+            <p>• 청년자립(19~24세) 트랙 전국화</p>
+            <p>• 선지급금 연령별 차등 인상</p>
+            <p>• 사각지대 제로화 달성</p>
+          </div>
+        </div>
+        <div class="stat-highlight" style="margin-top:10px; border-color:#059669; background:rgba(5, 150, 105, 0.1);">
+          <div style="font-weight:700; color:#34D399; font-size:1.05rem;">🎯 핵심 기대효과 지표 (KPI)</div>
+          <p style="color:#A7F3D0; font-size:0.9rem; margin-top:4px;">
+            한부모 아동 빈곤율 35% 감축 | 양육비 실질 회수율 30%대 진입 | 신청 소요시간 30초 단축 | 취업유지율 65% 이상 확보
+          </p>
+        </div>
+        <div class="source-box">
+          [국가 기본계획] 성평등가족부 「제5차 건강가정기본계획(2026~2030)」 <a href="https://www.mogef.go.kr" target="_blank">mogef.go.kr</a> | OECD Family Database <a href="https://www.oecd.org" target="_blank">oecd.org</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Right Side: Synchronized Policy Video Player Hub -->
+  <aside class="video-hub-pane">
+    <div class="video-hub-header">
+      <div class="vh-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        30초 국정 정책브리핑 영상
+      </div>
+      <div class="vh-status" id="videoStatusBadge">LIVE 재생 중</div>
+    </div>
+
+    <!-- Canvas Motion Player -->
+    <canvas id="syncCanvas" width="420" height="236"></canvas>
+
+    <!-- Controls Bar -->
+    <div class="video-controls-bar">
+      <div class="ctrl-row">
+        <button id="mainPlayBtn" style="padding:4px 10px; font-size:0.8rem;" onclick="togglePlayState()">⏸ 일시정지</button>
+        <div class="progress-rail" onclick="seekByClick(event)">
+          <div class="progress-fill" id="syncProgressFill"></div>
+        </div>
+        <div class="time-text" id="syncTimeText">00:00 / 00:30</div>
+      </div>
+    </div>
+
+    <!-- Chapter Navigation: Interlocked with Slide Deck -->
+    <div class="chapters-container">
+      <div style="font-size:0.75rem; font-weight:700; color:#93C5FD; padding-bottom:4px; text-transform:uppercase;">
+        📌 발표 슬라이드 연동 챕터 목록 (클릭 시 이동)
+      </div>
+      <div class="chapter-item active" onclick="jumpTo(0, 0)">
+        <div class="chap-left">
+          <div class="chap-time">00:00 ~ 00:05</div>
+          <div class="chap-name">1. 국정 정책연구 개요 및 비전</div>
+        </div>
+        <div class="chap-badge">슬라이드 1</div>
+      </div>
+      <div class="chapter-item" onclick="jumpTo(1, 5)">
+        <div class="chap-left">
+          <div class="chap-time">00:05 ~ 00:10</div>
+          <div class="chap-name">2. 3개년 정책 경과 &amp; 2026 현황</div>
+        </div>
+        <div class="chap-badge">슬라이드 2</div>
+      </div>
+      <div class="chapter-item" onclick="jumpTo(2, 10)">
+        <div class="chap-left">
+          <div class="chap-time">00:10 ~ 00:15</div>
+          <div class="chap-name">3. 레드팀 정합성 검증 &amp; 모순</div>
+        </div>
+        <div class="chap-badge">슬라이드 3</div>
+      </div>
+      <div class="chapter-item" onclick="jumpTo(3, 15)">
+        <div class="chap-left">
+          <div class="chap-time">00:15 ~ 00:20</div>
+          <div class="chap-name">4. 2024년 현장 실태조사 팩트</div>
+        </div>
+        <div class="chap-badge">슬라이드 4</div>
+      </div>
+      <div class="chapter-item" onclick="jumpTo(4, 20)">
+        <div class="chap-left">
+          <div class="chap-time">00:20 ~ 00:24</div>
+          <div class="chap-name">5. 해외 선진제도 벤치마킹</div>
+        </div>
+        <div class="chap-badge">슬라이드 5</div>
+      </div>
+      <div class="chapter-item" onclick="jumpTo(5, 24)">
+        <div class="chap-left">
+          <div class="chap-time">00:24 ~ 00:27</div>
+          <div class="chap-name">6. K-한부모 종합 개선 대안</div>
+        </div>
+        <div class="chap-badge">슬라이드 6</div>
+      </div>
+      <div class="chapter-item" onclick="jumpTo(6, 27)">
+        <div class="chap-left">
+          <div class="chap-time">00:27 ~ 00:30</div>
+          <div class="chap-name">7. 5개년 추진 로드맵 &amp; 비전</div>
+        </div>
+        <div class="chap-badge">슬라이드 7</div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <div class="foot-help">
+    <span>💡 키보드: <strong>[◀] 이전</strong>, <strong>[▶] 다음</strong>, <strong>[F] 전체화면</strong>, <strong>[Space] 재생/정지</strong></span>
+  </div>
+  <div class="deck-nav">
+    <span style="font-family:monospace; font-size:0.85rem; color:#9CA3AF;" id="deckPageDisp">Slide 1 / 7</span>
+    <button class="secondary" onclick="prevSlideDeck()">◀ 이전</button>
+    <button onclick="nextSlideDeck()">다음 ▶</button>
+  </div>
+</footer>
+
+<script>
+  let currentSlideIndex = 0;
+  const slides = document.querySelectorAll('.slide');
+  const chapters = document.querySelectorAll('.chapter-item');
+  const pageDisp = document.getElementById('deckPageDisp');
+  let isSyncMode = true;
+
+  // Video Time Schedule matching slides exactly
+  const slideTimeMap = [
+    { slide: 0, start: 0, end: 5 },
+    { slide: 1, start: 5, end: 10 },
+    { slide: 2, start: 10, end: 15 },
+    { slide: 3, start: 15, end: 20 },
+    { slide: 4, start: 20, end: 24 },
+    { slide: 5, start: 24, end: 27 },
+    { slide: 6, start: 27, end: 30 }
+  ];
+
+  function showSlideOnly(idx) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    chapters.forEach((c, i) => c.classList.toggle('active', i === idx));
+    currentSlideIndex = idx;
+    pageDisp.textContent = `Slide ${currentSlideIndex + 1} / ${slides.length}`;
+  }
+
+  function nextSlideDeck() {
+    if (currentSlideIndex < slides.length - 1) {
+      const nextIdx = currentSlideIndex + 1;
+      showSlideOnly(nextIdx);
+      if (isSyncMode) {
+        videoCurrentTime = slideTimeMap[nextIdx].start;
+      }
+    }
+  }
+
+  function prevSlideDeck() {
+    if (currentSlideIndex > 0) {
+      const prevIdx = currentSlideIndex - 1;
+      showSlideOnly(prevIdx);
+      if (isSyncMode) {
+        videoCurrentTime = slideTimeMap[prevIdx].start;
+      }
+    }
+  }
+
+  function jumpTo(slideIdx, timeSec) {
+    showSlideOnly(slideIdx);
+    videoCurrentTime = timeSec;
+  }
+
+  function toggleSyncMode() {
+    isSyncMode = !isSyncMode;
+    const btn = document.getElementById('syncModeBtn');
+    if (isSyncMode) {
+      btn.textContent = '🔗 발표-동영상 연동 중';
+      btn.className = 'sync-active';
+    } else {
+      btn.textContent = '🔓 연동 해제됨 (독립 재생)';
+      btn.className = 'secondary';
+    }
+  }
+
+  function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {});
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); nextSlideDeck(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlideDeck(); }
+    if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFullScreen(); }
+    if (e.key === ' ') { e.preventDefault(); togglePlayState(); }
+  });
+
+  // --- Synchronized Canvas Motion Video Engine ---
+  const canvas = document.getElementById('syncCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 420, H = 236;
+  const TOTAL_DURATION = 30.0;
+  let videoCurrentTime = 0;
+  let isVideoPlaying = true;
+  let lastFrameTime = 0;
+
+  const scenes = [
+    { start: 0, end: 5, slideIdx: 0, tag: "01. 국정 정책연구", title: "한부모가족 지원제도 개선방안", sub: "아동 권리보장과 국가책임 강화 전략", metric: "2026 정부예산 6,260억 원 편성", color: "#3B82F6" },
+    { start: 5, end: 10, slideIdx: 1, tag: "02. 3개년 정책 경과", title: "기준 중위소득 65% + 선지급제", sub: "2026.10 양육비 선지급 소득기준 전면 폐지", metric: "청년한부모 최대 월 33만 원 수급", color: "#10B981" },
+    { start: 10, end: 15, slideIdx: 2, tag: "03. 레드팀 정합성 검증", title: "10대 핵심 모순 & 복지 절벽", sub: "실제 양육비(58만) 대비 보전율 39.5% 괴리", metric: "선지급금 회수율 14.66% 재정 누수", color: "#EF4444" },
+    { start: 15, end: 20, slideIdx: 3, tag: "04. 2024 현장 실태", title: "월소득 294만 & 양육비 미지급 71%", sub: "취업률 83.9% 속 임시일용직 30.8% 고율", metric: "양육비 선지급제 희망 1순위 (71.0%)", color: "#F59E0B" },
+    { start: 20, end: 24, slideIdx: 4, tag: "05. 해외 선진 사례", title: "독일 UVG & 프랑스 CAF·ARIPA", sub: "국가의 법정 채권 자동대위 및 원천징수", metric: "프랑스 AGEPI 취업보육바우처 연계", color: "#06B6D4" },
+    { start: 24, end: 27, slideIdx: 5, tag: "06. 종합 개선 대안", title: "한부모가족 온(On) & 듀얼 매니지먼트", sub: "30초 원클릭 모의계산 & 점감형 급여체계", metric: "생계용 노후차량 1대 재산 100% 공제", color: "#8B5CF6" },
+    { start: 27, end: 30, slideIdx: 6, tag: "07. 국가 비전 달성", title: "5개년 로드맵 & 아동 빈곤 35% 감축", sub: "229개 시군구 민관공동전담망 완비", metric: "양육비 실질 회수율 30%대 진입 달성", color: "#10B981" }
+  ];
+
+  function drawVideoFrame(t) {
+    ctx.fillStyle = '#0B1120';
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(30, 41, 59, 0.7)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 28) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (let y = 0; y < H; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+    const sc = scenes.find(s => t >= s.start && t < s.end) || scenes[scenes.length - 1];
+    const prog = (t - sc.start) / (sc.end - sc.start);
+
+    // Tag Badge
+    ctx.fillStyle = sc.color;
+    ctx.fillRect(16, 18, 4, 30);
+
+    ctx.fillStyle = '#94A3B8';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillText(sc.tag, 26, 28);
+
+    // Scene Title
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.fillText(sc.title, 26, 45);
+
+    // Graphic Card Box
+    ctx.fillStyle = '#111827';
+    ctx.strokeStyle = sc.color;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(16, 62, W - 32, 130, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    // Metric Highlight
+    ctx.fillStyle = sc.color;
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText(sc.metric, 30, 102);
+
+    ctx.fillStyle = '#CBD5E1';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(sc.sub, 30, 126);
+
+    ctx.fillStyle = '#64748B';
+    ctx.font = '10px sans-serif';
+    ctx.fillText("정책연구보고서 기반 실증 데이터 정합성 검증 완료", 30, 146);
+
+    // Dynamic wave bar inside card
+    const waveX = 30 + prog * (W - 90);
+    ctx.fillStyle = sc.color;
+    ctx.beginPath();
+    ctx.arc(waveX, 168, 6 + Math.sin(t * 8) * 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Watermark
+    ctx.fillStyle = '#475569';
+    ctx.font = '10px sans-serif';
+    ctx.fillText("국정 정책연구 표준 브리핑 | 30초 핵심 영상", 16, H - 14);
+
+    // Update Progress
+    const fillPercent = (t / TOTAL_DURATION) * 100;
+    document.getElementById('syncProgressFill').style.width = fillPercent + '%';
+
+    const sec = Math.floor(t);
+    const ms = Math.floor((t % 1) * 10);
+    document.getElementById('syncTimeText').textContent = `00:${sec < 10 ? '0' + sec : sec}.${ms} / 00:30`;
+
+    // Synchronize Slide Deck automatically if in Sync Mode
+    if (isSyncMode && sc.slideIdx !== currentSlideIndex) {
+      showSlideOnly(sc.slideIdx);
+    }
+  }
+
+  function renderVideoLoop(timestamp) {
+    if (!isVideoPlaying) return;
+    if (!lastFrameTime) lastFrameTime = timestamp;
+    const delta = (timestamp - lastFrameTime) / 1000;
+    lastFrameTime = timestamp;
+
+    videoCurrentTime += delta;
+    if (videoCurrentTime >= TOTAL_DURATION) {
+      videoCurrentTime = 0; // Seamless loop
+    }
+    drawVideoFrame(videoCurrentTime);
+    requestAnimationFrame(renderVideoLoop);
+  }
+
+  function togglePlayState() {
+    isVideoPlaying = !isVideoPlaying;
+    const btn = document.getElementById('mainPlayBtn');
+    const badge = document.getElementById('videoStatusBadge');
+    if (isVideoPlaying) {
+      btn.textContent = '⏸ 일시정지';
+      badge.textContent = 'LIVE 재생 중';
+      badge.style.background = '#10B981';
+      lastFrameTime = 0;
+      requestAnimationFrame(renderVideoLoop);
+    } else {
+      btn.textContent = '▶ 재생';
+      badge.textContent = '일시정지됨';
+      badge.style.background = '#6B7280';
+    }
+  }
+
+  function seekByClick(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    videoCurrentTime = (clickX / rect.width) * TOTAL_DURATION;
+    drawVideoFrame(videoCurrentTime);
+  }
+
+  // Start Animation Loop
+  drawVideoFrame(0);
+  requestAnimationFrame(renderVideoLoop);
+</script>
+</body>
+</html>
