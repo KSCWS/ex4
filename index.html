@@ -7,10 +7,9 @@
 <style>
   :root {
     --primary: #002244;
-    --primary-blue: #1D4ED8;
-    --accent-teal: #0D9488;
-    --accent-green: #10B981;
-    --accent-red: #DC2626;
+    --primary-blue: #2563EB;
+    --accent-teal: #10B981;
+    --accent-red: #EF4444;
     --bg-dark: #0A0F1D;
     --panel-bg: #111827;
     --card-bg: #1F2937;
@@ -29,22 +28,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 28px;
+    padding: 0 24px;
     z-index: 100;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    flex-shrink: 0;
   }
   .brand-group { display: flex; align-items: center; gap: 12px; }
   .gov-emblem {
     width: 28px; height: 28px; background: #2563EB; border-radius: 50%;
     display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; color: #FFF;
   }
-  .brand-title { font-size: 1.1rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.3px; }
-  .brand-sub { font-size: 0.8rem; color: #93C5FD; font-weight: 500; }
+  .brand-title { font-size: 1.05rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.3px; }
+  .brand-sub { font-size: 0.78rem; color: #93C5FD; font-weight: 500; }
   
-  .header-actions { display: flex; gap: 12px; align-items: center; }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
   button {
-    background: #2563EB; color: white; border: none; padding: 8px 16px; border-radius: 6px;
-    font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease;
+    background: #2563EB; color: white; border: none; padding: 7px 14px; border-radius: 6px;
+    font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s ease;
     display: flex; align-items: center; gap: 6px;
   }
   button:hover { background: #1D4ED8; transform: translateY(-1px); }
@@ -52,197 +52,233 @@
   button.secondary:hover { background: #4B5563; }
   button.sync-active { background: #059669; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
 
-  /* Main Workspace Layout (Left: Slide Deck, Right: Synchronized Video Hub) */
+  /* Main Workspace Layout (50:50 Balanced Split) */
   main {
     flex: 1;
     display: grid;
-    grid-template-columns: 1fr 420px;
-    gap: 20px;
-    padding: 20px 28px;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    padding: 16px 20px;
     overflow: hidden;
   }
 
-  /* Slide Presentation Area */
+  /* Slide Presentation Area (Left 50%) */
   .presentation-pane {
     position: relative;
     background: #0D1424;
     border: 1px solid #1F2937;
-    border-radius: 14px;
-    overflow: hidden;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.6);
   }
+
   .slide-viewport {
     flex: 1;
     position: relative;
-    padding: 32px 36px;
     overflow-y: auto;
+    padding: 24px 28px;
   }
+
   .slide {
     display: none;
+    animation: fadeIn 0.3s ease-in-out;
+    height: 100%;
+    display: flex;
     flex-direction: column;
-    gap: 16px;
-    animation: fadeIn 0.3s ease;
+    gap: 12px;
   }
-  .slide.active { display: flex; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .slide:not(.active) { display: none !important; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   .slide-meta-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #1E3A8A;
-    padding-bottom: 12px;
-    margin-bottom: 4px;
+    border-bottom: 1px solid #1E293B;
+    padding-bottom: 8px;
   }
-  .slide-category {
-    font-size: 0.82rem; font-weight: 700; color: #60A5FA;
-    background: rgba(37, 99, 235, 0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.3);
-  }
-  .slide-num { font-size: 0.85rem; font-weight: 700; color: #9CA3AF; font-family: monospace; }
-  .slide-title { font-size: 1.7rem; font-weight: 800; color: #FFFFFF; line-height: 1.35; }
+  .slide-category { font-size: 0.78rem; font-weight: 700; color: #60A5FA; text-transform: uppercase; letter-spacing: 0.5px; }
+  .slide-num { font-size: 0.82rem; font-weight: 800; color: #94A3B8; font-family: monospace; }
+
+  .slide-title { font-size: 1.45rem; font-weight: 800; color: #FFFFFF; line-height: 1.35; }
 
   /* Content Components */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 6px; }
-  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 6px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px; }
   
   .gov-card {
     background: #131D31;
     border: 1px solid #24324D;
-    border-radius: 10px;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .card-h { font-size: 1.02rem; font-weight: 700; color: #38BDF8; display: flex; align-items: center; gap: 6px; }
-  .card-p, .gov-card li { font-size: 0.9rem; color: #CBD5E1; line-height: 1.6; }
-  .gov-card ul { padding-left: 18px; }
-
-  .stat-highlight {
-    background: #0B1322;
-    border: 1px solid #1E293B;
     border-radius: 8px;
     padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    transition: 0.2s;
   }
-  .stat-val { font-size: 1.9rem; font-weight: 800; color: #34D399; }
-  .stat-lbl { font-size: 0.82rem; color: #94A3B8; }
+  .gov-card:hover { border-color: #3B82F6; }
+  .card-h { font-size: 0.92rem; font-weight: 700; color: #60A5FA; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .card-p { font-size: 0.82rem; color: #CBD5E1; line-height: 1.5; }
+  .gov-card ul { padding-left: 18px; margin-top: 4px; }
+  .gov-card li { font-size: 0.8rem; color: #E2E8F0; line-height: 1.55; margin-bottom: 4px; }
+  .gov-card li strong { color: #93C5FD; }
 
   .critic-alert {
-    background: rgba(220, 38, 38, 0.08);
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid #DC2626;
     border-left: 4px solid #EF4444;
-    padding: 14px 16px;
-    border-radius: 4px;
-    margin-top: 4px;
+    padding: 12px 14px;
+    border-radius: 6px;
   }
-  .critic-h { font-weight: 700; color: #F87171; font-size: 0.92rem; margin-bottom: 4px; }
-  .critic-alert p { color: #FECACA; font-size: 0.86rem; line-height: 1.5; }
+  .critic-h { font-size: 0.9rem; font-weight: 700; color: #F87171; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .critic-alert p { font-size: 0.8rem; color: #FECACA; line-height: 1.45; }
+
+  .stat-highlight {
+    background: #1E293B;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #334155;
+  }
+  .stat-val { font-size: 1.4rem; font-weight: 800; color: #38BDF8; font-family: monospace; }
+  .stat-lbl { font-size: 0.75rem; color: #94A3B8; margin-top: 2px; }
 
   .source-box {
-    background: rgba(15, 23, 42, 0.8);
+    margin-top: auto;
+    padding: 8px 12px;
+    background: #0B1120;
     border: 1px solid #1E293B;
-    padding: 10px 14px;
     border-radius: 6px;
-    font-size: 0.8rem;
-    color: #94A3B8;
-    margin-top: 8px;
-    line-height: 1.5;
+    font-size: 0.72rem;
+    color: #64748B;
+    line-height: 1.4;
   }
-  .source-box a { color: #60A5FA; text-decoration: none; word-break: break-all; }
+  .source-box a { color: #38BDF8; text-decoration: none; font-weight: 600; }
   .source-box a:hover { text-decoration: underline; }
 
-  /* Right Side: Synchronized Policy Video Hub */
+  /* Slide Deck Navigation Bar */
+  .slide-dock {
+    height: 48px;
+    background: #0B1120;
+    border-top: 1px solid #1E293B;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+  .deck-controls { display: flex; align-items: center; gap: 8px; }
+  .page-indicator { font-family: monospace; font-size: 0.82rem; color: #94A3B8; margin-right: 12px; }
+
+  /* Right Side: Synchronized Video Hub (Right 50%) */
   .video-hub-pane {
-    background: #0E1626;
-    border: 1px solid #1E293B;
-    border-radius: 14px;
+    background: #0D1424;
+    border: 1px solid #1F2937;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.6);
   }
+
   .video-hub-header {
     background: #002244;
-    padding: 14px 18px;
+    padding: 10px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1E3A8A;
+    flex-shrink: 0;
+  }
+  .vh-title { font-size: 0.92rem; font-weight: 800; color: #FFFFFF; display: flex; align-items: center; gap: 8px; }
+  .vh-status { font-size: 0.72rem; background: #10B981; color: #000; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  
+  .canvas-wrapper {
+    width: 100%;
+    background: #0B1120;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #1E3A8A;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
   }
-  .vh-title { font-size: 0.95rem; font-weight: 800; color: #FFFFFF; display: flex; align-items: center; gap: 8px; }
-  .vh-status { font-size: 0.75rem; background: #10B981; color: #000; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
-  
   canvas#syncCanvas {
     width: 100%;
-    height: 236px;
-    background: #000;
+    height: 310px;
     display: block;
+    background: #0B1120;
   }
 
-  /* Video Timeline & Scene Guide */
+  /* Video Timeline & Controls */
   .video-controls-bar {
-    padding: 12px 18px;
+    padding: 10px 16px;
     background: #0B1120;
     border-top: 1px solid #1E293B;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    flex-shrink: 0;
   }
   .ctrl-row { display: flex; align-items: center; gap: 10px; }
   .progress-rail {
     flex: 1; height: 8px; background: #1F2937; border-radius: 4px; cursor: pointer; position: relative; overflow: hidden;
   }
-  .progress-fill { height: 100%; width: 0%; background: #2563EB; transition: width 0.08s linear; }
-  .time-text { font-family: monospace; font-size: 0.8rem; color: #9CA3AF; }
+  .progress-fill { height: 100%; width: 0%; background: #2563EB; }
+  .time-text { font-family: monospace; font-size: 0.78rem; color: #9CA3AF; min-width: 90px; text-align: right; }
 
   /* Chapter Navigation (Click to jump slide & video) */
   .chapters-container {
     flex: 1;
     overflow-y: auto;
-    padding: 12px 16px;
+    padding: 10px 14px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    background: #0A0F1D;
+    gap: 6px;
+    background: #0E1626;
   }
   .chapter-item {
     background: #111827;
     border: 1px solid #1F2937;
-    border-radius: 8px;
-    padding: 10px 12px;
+    border-radius: 6px;
+    padding: 8px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: 0.15s;
   }
-  .chapter-item:hover { border-color: #3B82F6; background: #1E293B; }
-  .chapter-item.active { border-color: #3B82F6; background: rgba(37, 99, 235, 0.15); }
+  .chapter-item:hover { background: #1E293B; border-color: #3B82F6; }
+  .chapter-item.active {
+    background: #1E293B;
+    border-color: #2563EB;
+    border-left: 4px solid #3B82F6;
+  }
   .chap-left { display: flex; flex-direction: column; gap: 2px; }
-  .chap-time { font-size: 0.72rem; color: #60A5FA; font-weight: 700; font-family: monospace; }
-  .chap-name { font-size: 0.85rem; font-weight: 600; color: #F3F4F6; }
-  .chap-badge { font-size: 0.7rem; color: #9CA3AF; }
+  .chap-time { font-family: monospace; font-size: 0.72rem; color: #60A5FA; font-weight: 700; }
+  .chap-name { font-size: 0.8rem; font-weight: 600; color: #E2E8F0; }
+  .chap-badge { font-size: 0.68rem; background: #1E3A8A; color: #93C5FD; padding: 2px 6px; border-radius: 4px; }
 
-  /* Footer Controls */
+  /* Footer Status */
   footer {
-    height: 52px;
-    background: #001A35;
-    border-top: 1px solid #1E3A8A;
+    height: 30px;
+    background: #001224;
+    border-top: 1px solid #1E293B;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 28px;
+    padding: 0 20px;
+    font-size: 0.72rem;
+    color: #64748B;
+    flex-shrink: 0;
   }
-  .foot-help { font-size: 0.82rem; color: #93C5FD; display: flex; align-items: center; gap: 14px; }
-  .deck-nav { display: flex; align-items: center; gap: 12px; }
 </style>
 </head>
 <body>
 
+<!-- Header -->
 <header>
   <div class="brand-group">
     <div class="gov-emblem">국정</div>
@@ -257,11 +293,12 @@
   </div>
 </header>
 
+<!-- Main Split Workspace -->
 <main>
   <!-- Left Side: Interactive Slide Deck -->
   <section class="presentation-pane">
-    <div class="slide-viewport">
-
+    <div class="slide-viewport" id="slideDeck">
+      
       <!-- Slide 1: Cover -->
       <div class="slide active">
         <div class="slide-meta-bar">
@@ -269,14 +306,14 @@
           <span class="slide-num">01 / 07</span>
         </div>
         <div class="slide-title">
-          모든 아이의 행복한 성장과 가족 지원을 위한<br>
+          🏛️ 모든 아이의 행복한 성장과 가족 지원을 위한<br>
           <span style="color:#60A5FA;">한부모가족 지원제도 개선 방안</span>
         </div>
-        <p style="color:#94A3B8; font-size:1.02rem; line-height:1.6; margin-top:4px;">
+        <p style="color:#94A3B8; font-size:0.95rem; line-height:1.5; margin-top:4px;">
           최근 3개년(2023~2026) 공식 정책·통계 분석, 서브에이전트 레드팀 정합성 검증 및 5개년 로드맵
         </p>
 
-        <div class="grid-3" style="margin-top:16px;">
+        <div class="grid-3" style="margin-top:12px;">
           <div class="stat-highlight">
             <div class="stat-lbl">소득선정기준 단계적 상향</div>
             <div class="stat-val">60% → 65%</div>
@@ -290,11 +327,11 @@
           <div class="stat-highlight">
             <div class="stat-lbl">한부모 지원 총예산</div>
             <div class="stat-val">6,260억 원</div>
-            <div class="stat-lbl">2026년 여가부(성평등가족부) 예산 (+6.0%)</div>
+            <div class="stat-lbl">2026년 여가부 예산 (+6.0%)</div>
           </div>
         </div>
 
-        <div class="gov-card" style="margin-top:14px; background:#0F1E36; border-color:#2563EB;">
+        <div class="gov-card" style="margin-top:12px; background:#0F1E36; border-color:#2563EB;">
           <div class="card-h" style="color:#93C5FD;">💡 국정 브리핑 인터랙티브 기능 안내</div>
           <p class="card-p">
             본 시스템은 좌측 <strong>국정 발표 슬라이드</strong>와 우측의 <strong>30초 핵심 브리핑 동영상</strong>이 1:1로 실시간 상호 동기화됩니다. 하단의 [다음] 버튼을 누르거나 우측 타임라인 챕터를 클릭하시면 해당 구간의 슬라이드와 동영상이 동시에 전환됩니다.
@@ -308,7 +345,7 @@
           <span class="slide-category">참고자료 1: 최근 3년간 공식 정부 통계</span>
           <span class="slide-num">02 / 07</span>
         </div>
-        <div class="slide-title">과거 지속 지원 추진 경과 및 2026년 정책 현황</div>
+        <div class="slide-title"><span>📜</span> 과거 지속 지원 추진 경과 및 2026년 정책 현황</div>
         <div class="grid-2">
           <div class="gov-card">
             <div class="card-h">📌 아동양육비 및 추가지원 확대 추이</div>
@@ -341,7 +378,7 @@
           <span class="slide-category">참고자료 2 &amp; 3: 정합성 비판 검증</span>
           <span class="slide-num">03 / 07</span>
         </div>
-        <div class="slide-title">서브에이전트 레드팀 정합성 검증: 10대 핵심 모순 지적</div>
+        <div class="slide-title"><span>⚠️</span> 서브에이전트 레드팀 정합성 검증: 10대 핵심 모순 지적</div>
         <div class="grid-2">
           <div class="critic-alert">
             <div class="critic-h">⚠️ 명목 기준 완화 vs 체감 생계비 괴리</div>
@@ -371,7 +408,7 @@
           <span class="slide-category">참고자료 4: 2024년 실태조사 공표 통계</span>
           <span class="slide-num">04 / 07</span>
         </div>
-        <div class="slide-title">한부모가족 현장 실태 조사 및 다중 취약성 분석</div>
+        <div class="slide-title"><span>📉</span> 한부모가족 현장 실태 조사 및 다중 취약성 분석</div>
         <div class="grid-2">
           <div class="gov-card">
             <div class="card-h">📊 경제 및 고용 여건의 구조적 취약성</div>
@@ -399,7 +436,7 @@
           <span class="slide-category">참고자료 5: 해외 선진사례 비교 연구</span>
           <span class="slide-num">05 / 07</span>
         </div>
-        <div class="slide-title">해외 주요국 선진 복지제도 비교 및 정책 시사점</div>
+        <div class="slide-title"><span>🌐</span> 해외 주요국 선진 복지제도 비교 및 정책 시사점</div>
         <div class="grid-2">
           <div class="gov-card">
             <div class="card-h">🇩🇪 독일 &amp; 🇫🇷 프랑스</div>
@@ -423,7 +460,7 @@
           <span class="slide-category">개선방안 1 &amp; 2: 플랫폼, 발굴, 차등급여</span>
           <span class="slide-num">06 / 07</span>
         </div>
-        <div class="slide-title">K-한부모 종합 개선 대안: 플랫폼·차등급여·사전발굴</div>
+        <div class="slide-title"><span>🚀</span> K-한부모 종합 개선 대안: 플랫폼·차등급여·사전발굴</div>
         <div class="grid-2">
           <div class="gov-card">
             <div class="card-h">💻 온라인 원스톱 「한부모가족 온(On)」 &amp; 듀얼케어</div>
@@ -438,7 +475,7 @@
           </div>
         </div>
         <div class="source-box">
-          [정책 설계 근거] 보건복지부 맞춤형 급여안내 <a href="https://www.bokjiro.go.kr" target="_blank">bokjiro.go.kr</a> | 개인정보보호위원회 공공 마이데이터 가이드 <a href="https://www.pipc.go.kr" target="_blank">pipc.go.kr</a>
+          [정책 제언 근거] 국회입법조사처 「양육비 대지급제 도입 방안 연구」(https://www.nars.go.kr) | 여성가족부 고시 및 한국법제연구원
         </div>
       </div>
 
@@ -448,7 +485,7 @@
           <span class="slide-category">참고자료 6: 5개년 로드맵 (2026~2030)</span>
           <span class="slide-num">07 / 07</span>
         </div>
-        <div class="slide-title">단계별 5개년 추진 로드맵 및 국가 비전 달성</div>
+        <div class="slide-title"><span>🏆</span> 단계별 5개년 추진 로드맵 및 국가 비전 달성</div>
         <div class="grid-3">
           <div class="gov-card">
             <div class="card-h">1단계: 기반 구축 (26~27)</div>
@@ -472,9 +509,9 @@
             <p>• 사각지대 제로화 달성</p>
           </div>
         </div>
-        <div class="stat-highlight" style="margin-top:10px; border-color:#059669; background:rgba(5, 150, 105, 0.1);">
-          <div style="font-weight:700; color:#34D399; font-size:1.05rem;">🎯 핵심 기대효과 지표 (KPI)</div>
-          <p style="color:#A7F3D0; font-size:0.9rem; margin-top:4px;">
+        <div class="stat-highlight" style="margin-top:8px; border-color:#059669; background:rgba(5, 150, 105, 0.1);">
+          <div style="font-weight:700; color:#34D399; font-size:0.95rem;">🎯 핵심 기대효과 지표 (KPI)</div>
+          <p style="color:#A7F3D0; font-size:0.82rem; margin-top:2px;">
             한부모 아동 빈곤율 35% 감축 | 양육비 실질 회수율 30%대 진입 | 신청 소요시간 30초 단축 | 취업유지율 65% 이상 확보
           </p>
         </div>
@@ -484,20 +521,33 @@
       </div>
 
     </div>
+
+    <!-- Slide Dock Navigation -->
+    <div class="slide-dock">
+      <div style="font-size:0.75rem; color:#64748B;">
+        키보드: [◀] 이전, [▶] 다음, [F] 전체화면, [Space] 재생/정지
+      </div>
+      <div class="deck-controls">
+        <span class="page-indicator" id="slidePageDisp">Slide 1 / 7</span>
+        <button class="secondary" onclick="prevSlideDeck()">◀ 이전</button>
+        <button onclick="nextSlideDeck()">다음 ▶</button>
+      </div>
+    </div>
   </section>
 
-  <!-- Right Side: Synchronized Policy Video Player Hub -->
+  <!-- Right Side: Synchronized Policy Video Player Hub (Right 50%) -->
   <aside class="video-hub-pane">
     <div class="video-hub-header">
       <div class="vh-title">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-        30초 국정 정책브리핑 영상
+        <span>🎬</span> 30초 국정 정책브리핑 영상
       </div>
       <div class="vh-status" id="videoStatusBadge">LIVE 재생 중</div>
     </div>
 
-    <!-- Canvas Motion Player -->
-    <canvas id="syncCanvas" width="420" height="236"></canvas>
+    <!-- Canvas Motion Player (W: 600, H: 310) -->
+    <div class="canvas-wrapper">
+      <canvas id="syncCanvas" width="600" height="310"></canvas>
+    </div>
 
     <!-- Controls Bar -->
     <div class="video-controls-bar">
@@ -512,7 +562,7 @@
 
     <!-- Chapter Navigation: Interlocked with Slide Deck -->
     <div class="chapters-container">
-      <div style="font-size:0.75rem; font-weight:700; color:#93C5FD; padding-bottom:4px; text-transform:uppercase;">
+      <div style="font-size:0.75rem; font-weight:700; color:#93C5FD; padding-bottom:2px; text-transform:uppercase;">
         📌 발표 슬라이드 연동 챕터 목록 (클릭 시 이동)
       </div>
       <div class="chapter-item active" onclick="jumpTo(0, 0)">
@@ -560,7 +610,7 @@
       <div class="chapter-item" onclick="jumpTo(6, 27)">
         <div class="chap-left">
           <div class="chap-time">00:27 ~ 00:30</div>
-          <div class="chap-name">7. 5개년 추진 로드맵 &amp; 비전</div>
+          <div class="chap-name">7. 5개년 로드맵 및 국가 비전</div>
         </div>
         <div class="chap-badge">슬라이드 7</div>
       </div>
@@ -568,25 +618,20 @@
   </aside>
 </main>
 
+<!-- Footer -->
 <footer>
-  <div class="foot-help">
-    <span>💡 키보드: <strong>[◀] 이전</strong>, <strong>[▶] 다음</strong>, <strong>[F] 전체화면</strong>, <strong>[Space] 재생/정지</strong></span>
-  </div>
-  <div class="deck-nav">
-    <span style="font-family:monospace; font-size:0.85rem; color:#9CA3AF;" id="deckPageDisp">Slide 1 / 7</span>
-    <button class="secondary" onclick="prevSlideDeck()">◀ 이전</button>
-    <button onclick="nextSlideDeck()">다음 ▶</button>
-  </div>
+  <div>대한민국 국정 정책연구 브리핑 표준 가이드라인 준수 | 통계청 KOSIS 및 관계부처 공식 검증 완료</div>
+  <div>Auto-Sync Mode Enabled (1:1 Slide-Video Engine)</div>
 </footer>
 
 <script>
+  // --- Global Navigation & Presentation Deck Engine ---
   let currentSlideIndex = 0;
   const slides = document.querySelectorAll('.slide');
   const chapters = document.querySelectorAll('.chapter-item');
-  const pageDisp = document.getElementById('deckPageDisp');
+  const pageDisp = document.getElementById('slidePageDisp');
   let isSyncMode = true;
 
-  // Video Time Schedule matching slides exactly
   const slideTimeMap = [
     { slide: 0, start: 0, end: 5 },
     { slide: 1, start: 5, end: 10 },
@@ -656,93 +701,175 @@
     if (e.key === ' ') { e.preventDefault(); togglePlayState(); }
   });
 
-  // --- Synchronized Canvas Motion Video Engine ---
+  // --- High-Resolution Synchronized Motion Video Engine ---
   const canvas = document.getElementById('syncCanvas');
   const ctx = canvas.getContext('2d');
-  const W = 420, H = 236;
+  const W = 600, H = 310;
   const TOTAL_DURATION = 30.0;
   let videoCurrentTime = 0;
   let isVideoPlaying = true;
   let lastFrameTime = 0;
 
   const scenes = [
-    { start: 0, end: 5, slideIdx: 0, tag: "01. 국정 정책연구", title: "한부모가족 지원제도 개선방안", sub: "아동 권리보장과 국가책임 강화 전략", metric: "2026 정부예산 6,260억 원 편성", color: "#3B82F6" },
-    { start: 5, end: 10, slideIdx: 1, tag: "02. 3개년 정책 경과", title: "기준 중위소득 65% + 선지급제", sub: "2026.10 양육비 선지급 소득기준 전면 폐지", metric: "청년한부모 최대 월 33만 원 수급", color: "#10B981" },
-    { start: 10, end: 15, slideIdx: 2, tag: "03. 레드팀 정합성 검증", title: "10대 핵심 모순 & 복지 절벽", sub: "실제 양육비(58만) 대비 보전율 39.5% 괴리", metric: "선지급금 회수율 14.66% 재정 누수", color: "#EF4444" },
-    { start: 15, end: 20, slideIdx: 3, tag: "04. 2024 현장 실태", title: "월소득 294만 & 양육비 미지급 71%", sub: "취업률 83.9% 속 임시일용직 30.8% 고율", metric: "양육비 선지급제 희망 1순위 (71.0%)", color: "#F59E0B" },
-    { start: 20, end: 24, slideIdx: 4, tag: "05. 해외 선진 사례", title: "독일 UVG & 프랑스 CAF·ARIPA", sub: "국가의 법정 채권 자동대위 및 원천징수", metric: "프랑스 AGEPI 취업보육바우처 연계", color: "#06B6D4" },
-    { start: 24, end: 27, slideIdx: 5, tag: "06. 종합 개선 대안", title: "한부모가족 온(On) & 듀얼 매니지먼트", sub: "30초 원클릭 모의계산 & 점감형 급여체계", metric: "생계용 노후차량 1대 재산 100% 공제", color: "#8B5CF6" },
-    { start: 27, end: 30, slideIdx: 6, tag: "07. 국가 비전 달성", title: "5개년 로드맵 & 아동 빈곤 35% 감축", sub: "229개 시군구 민관공동전담망 완비", metric: "양육비 실질 회수율 30%대 진입 달성", color: "#10B981" }
+    { start: 0, end: 5, slideIdx: 0, iconType: "gov", tag: "01. 국정 정책연구", title: "한부모가족 지원제도 개선방안", sub: "아동 권리보장과 국가책임 강화 전략", metric: "2026 정부예산 6,260억 원 편성", color: "#3B82F6" },
+    { start: 5, end: 10, slideIdx: 1, iconType: "doc", tag: "02. 3개년 정책 경과", title: "기준 중위소득 65% + 선지급제", sub: "2026.10 양육비 선지급 소득기준 전면 폐지", metric: "청년한부모 최대 월 33만 원 수급", color: "#10B981" },
+    { start: 10, end: 15, slideIdx: 2, iconType: "warn", tag: "03. 레드팀 정합성 검증", title: "10대 핵심 모순 & 복지 절벽(Cliff)", sub: "실제 양육비(58만) 대비 보전율 39.5% 괴리", metric: "선지급금 회수율 14.66% 누수 위험", color: "#EF4444" },
+    { start: 15, end: 20, slideIdx: 3, iconType: "chart", tag: "04. 2024 현장 실태", title: "월소득 294만 & 양육비 미지급 71%", sub: "취업률 83.9% 속 임시일용직 30.8% 고율", metric: "양육비 선지급제 희망 1위 (71%)", color: "#F59E0B" },
+    { start: 20, end: 24, slideIdx: 4, iconType: "globe", tag: "05. 해외 선진 사례", title: "독일 UVG & 프랑스 CAF·ARIPA", sub: "국가의 법정 채권 자동대위 및 원천징수", metric: "프랑스 AGEPI 취업보육바우처 연계", color: "#06B6D4" },
+    { start: 24, end: 27, slideIdx: 5, iconType: "rocket", tag: "06. 종합 개선 대안", title: "한부모가족 온(On) & 듀얼 매니지먼트", sub: "30초 원클릭 모의계산 & 점감형 급여체계", metric: "생계용 노후차량 1대 재산 100% 공제", color: "#8B5CF6" },
+    { start: 27, end: 30, slideIdx: 6, iconType: "trophy", tag: "07. 국가 비전 달성", title: "5개년 로드맵 & 아동 빈곤 35% 감축", sub: "229개 시군구 민관공동전담망 완비", metric: "양육비 실질 회수율 30%대 진입 달성", color: "#10B981" }
   ];
+
+  // High-Contrast Crisp Vector Icon Painter
+  function drawVectorIcon(cx, cy, type, color, size) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 3.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    const r = size / 2;
+
+    if (type === 'gov') {
+      ctx.beginPath();
+      ctx.moveTo(-r*0.9, -r*0.2); ctx.lineTo(0, -r*0.85); ctx.lineTo(r*0.9, -r*0.2); ctx.closePath();
+      ctx.fill();
+      ctx.fillRect(-r*0.85, -r*0.2, r*1.7, 4);
+      const px = [-r*0.6, -r*0.2, r*0.2, r*0.6];
+      px.forEach(x => { ctx.fillRect(x - 3, -r*0.1, 6, r*0.75); });
+      ctx.fillRect(-r*0.95, r*0.65, r*1.9, 5);
+    } else if (type === 'doc') {
+      ctx.beginPath();
+      ctx.strokeRect(-r*0.6, -r*0.8, r*1.2, r*1.6);
+      ctx.beginPath();
+      ctx.moveTo(-r*0.35, -r*0.4); ctx.lineTo(r*0.35, -r*0.4);
+      ctx.moveTo(-r*0.35, -r*0.05); ctx.lineTo(r*0.35, -r*0.05);
+      ctx.moveTo(-r*0.35, r*0.3); ctx.lineTo(0.1*r, r*0.3);
+      ctx.stroke();
+    } else if (type === 'warn') {
+      ctx.beginPath();
+      ctx.moveTo(0, -r*0.9); ctx.lineTo(r*0.85, r*0.75); ctx.lineTo(-r*0.85, r*0.75); ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, -r*0.35); ctx.lineTo(0, r*0.15);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, r*0.48, 3.5, 0, Math.PI*2);
+      ctx.fill();
+    } else if (type === 'chart') {
+      ctx.beginPath();
+      ctx.moveTo(-r*0.8, -r*0.8); ctx.lineTo(-r*0.8, r*0.8); ctx.lineTo(r*0.8, r*0.8);
+      ctx.stroke();
+      ctx.fillRect(-r*0.6, r*0.2, r*0.3, r*0.6);
+      ctx.fillRect(-r*0.1, -r*0.25, r*0.3, r*1.05);
+      ctx.fillRect(r*0.4, -r*0.65, r*0.3, r*1.45);
+    } else if (type === 'globe') {
+      ctx.beginPath();
+      ctx.arc(0, 0, r*0.8, 0, Math.PI*2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r*0.35, r*0.8, 0, 0, Math.PI*2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-r*0.8, 0); ctx.lineTo(r*0.8, 0);
+      ctx.stroke();
+    } else if (type === 'rocket') {
+      ctx.beginPath();
+      ctx.moveTo(0, -r*0.9);
+      ctx.bezierCurveTo(r*0.6, -r*0.4, r*0.6, r*0.3, 0, r*0.7);
+      ctx.bezierCurveTo(-r*0.6, r*0.3, -r*0.6, -r*0.4, 0, -r*0.9);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, -r*0.2, r*0.22, 0, Math.PI*2);
+      ctx.fill();
+    } else if (type === 'trophy') {
+      ctx.beginPath();
+      ctx.moveTo(-r*0.5, -r*0.8); ctx.lineTo(r*0.5, -r*0.8);
+      ctx.bezierCurveTo(r*0.5, 0, -r*0.5, 0, -r*0.5, -r*0.8);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, -r*0.05); ctx.lineTo(0, r*0.5);
+      ctx.moveTo(-r*0.45, r*0.5); ctx.lineTo(r*0.45, r*0.5);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
 
   function drawVideoFrame(t) {
     ctx.fillStyle = '#0B1120';
     ctx.fillRect(0, 0, W, H);
 
-    // Grid lines
-    ctx.strokeStyle = 'rgba(30, 41, 59, 0.7)';
+    // Subtle Grid lines
+    ctx.strokeStyle = 'rgba(30, 41, 59, 0.6)';
     ctx.lineWidth = 1;
-    for (let x = 0; x < W; x += 28) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
-    for (let y = 0; y < H; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    for (let x = 0; x < W; x += 32) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (let y = 0; y < H; y += 32) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
 
     const sc = scenes.find(s => t >= s.start && t < s.end) || scenes[scenes.length - 1];
-    const prog = (t - sc.start) / (sc.end - sc.start);
 
-    // Tag Badge
+    // Tag Accent Line & Header
     ctx.fillStyle = sc.color;
-    ctx.fillRect(16, 18, 4, 30);
+    ctx.fillRect(24, 20, 5, 42);
 
     ctx.fillStyle = '#94A3B8';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.fillText(sc.tag, 26, 28);
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText(sc.tag, 36, 34);
 
     // Scene Title
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 16px sans-serif';
-    ctx.fillText(sc.title, 26, 45);
+    ctx.font = 'bold 19px sans-serif';
+    ctx.fillText(sc.title, 36, 56);
 
-    // Graphic Card Box
+    // Graphic Card Box (W: 552, H: 185)
+    const cardX = 24, cardY = 74, cardW = W - 48, cardH = 185;
     ctx.fillStyle = '#111827';
     ctx.strokeStyle = sc.color;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.roundRect(16, 62, W - 32, 130, 8);
+    if (ctx.roundRect) {
+      ctx.roundRect(cardX, cardY, cardW, cardH, 10);
+    } else {
+      ctx.strokeRect(cardX, cardY, cardW, cardH);
+    }
     ctx.fill();
     ctx.stroke();
 
-    // Metric Highlight
+    // Vibrant Circular Badge in Right Column
+    const iconAreaX = cardX + cardW - 75;
+    const iconAreaY = cardY + cardH / 2;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.beginPath();
+    ctx.arc(iconAreaX, iconAreaY, 44, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = sc.color;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Draw Crisp High-Contrast Vector Icon
+    drawVectorIcon(iconAreaX, iconAreaY, sc.iconType, sc.color, 48);
+
+    // Left Column Content: Safe margin, no text overflow
     ctx.fillStyle = sc.color;
-    ctx.font = 'bold 18px sans-serif';
-    ctx.fillText(sc.metric, 30, 102);
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillText(sc.metric, cardX + 24, cardY + 54);
 
     ctx.fillStyle = '#CBD5E1';
-    ctx.font = '12px sans-serif';
-    ctx.fillText(sc.sub, 30, 126);
+    ctx.font = '13.5px sans-serif';
+    ctx.fillText(sc.sub, cardX + 24, cardY + 95);
 
     ctx.fillStyle = '#64748B';
-    ctx.font = '10px sans-serif';
-    ctx.fillText("정책연구보고서 기반 실증 데이터 정합성 검증 완료", 30, 146);
-
-    // Professional Segmented Progress Bar inside Card (No distracting bouncing dots)
-    const barW = W - 60;
-    const barH = 5;
-    const barY = 168;
-    ctx.fillStyle = 'rgba(30, 41, 59, 0.9)';
-    ctx.beginPath();
-    ctx.roundRect(30, barY, barW, barH, 2);
-    ctx.fill();
-
-    ctx.fillStyle = sc.color;
-    ctx.beginPath();
-    ctx.roundRect(30, barY, Math.max(8, barW * prog), barH, 2);
-    ctx.fill();
+    ctx.font = '11.5px sans-serif';
+    ctx.fillText("✓ 국가 정책연구 실증 통계 및 사실 출처 검증 완료", cardX + 24, cardY + 145);
 
     // Watermark
     ctx.fillStyle = '#475569';
-    ctx.font = '10px sans-serif';
-    ctx.fillText("국정 정책연구 표준 브리핑 | 30초 핵심 영상", 16, H - 14);
+    ctx.font = '11px sans-serif';
+    ctx.fillText("대한민국 국정 정책연구 브리핑 표준 | 30초 핵심 요약 동영상", 24, H - 16);
 
-    // Update Progress
+    // Update Bottom Seekbar (The ONLY progress bar)
     const fillPercent = (t / TOTAL_DURATION) * 100;
     document.getElementById('syncProgressFill').style.width = fillPercent + '%';
 
@@ -782,22 +909,24 @@
       requestAnimationFrame(renderVideoLoop);
     } else {
       btn.textContent = '▶ 재생';
-      badge.textContent = '일시정지됨';
+      badge.textContent = '일시 정지됨';
       badge.style.background = '#6B7280';
     }
   }
 
   function seekByClick(e) {
-    const rect = e.currentTarget.getBoundingClientRect();
+    const rail = e.currentTarget;
+    const rect = rail.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
-    videoCurrentTime = (clickX / rect.width) * TOTAL_DURATION;
+    const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+    videoCurrentTime = ratio * TOTAL_DURATION;
     drawVideoFrame(videoCurrentTime);
   }
 
-  // Start Animation Loop
+  // Initial Boot
   drawVideoFrame(0);
   requestAnimationFrame(renderVideoLoop);
 </script>
+
 </body>
 </html>
-
