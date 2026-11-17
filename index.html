@@ -723,11 +723,18 @@
     ctx.font = '10px sans-serif';
     ctx.fillText("정책연구보고서 기반 실증 데이터 정합성 검증 완료", 30, 146);
 
-    // Dynamic wave bar inside card
-    const waveX = 30 + prog * (W - 90);
+    // Professional Segmented Progress Bar inside Card (No distracting bouncing dots)
+    const barW = W - 60;
+    const barH = 5;
+    const barY = 168;
+    ctx.fillStyle = 'rgba(30, 41, 59, 0.9)';
+    ctx.beginPath();
+    ctx.roundRect(30, barY, barW, barH, 2);
+    ctx.fill();
+
     ctx.fillStyle = sc.color;
     ctx.beginPath();
-    ctx.arc(waveX, 168, 6 + Math.sin(t * 8) * 2, 0, Math.PI * 2);
+    ctx.roundRect(30, barY, Math.max(8, barW * prog), barH, 2);
     ctx.fill();
 
     // Watermark
@@ -793,3 +800,4 @@
 </script>
 </body>
 </html>
+
